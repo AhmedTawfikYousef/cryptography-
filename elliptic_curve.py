@@ -122,23 +122,25 @@ if __name__ == "__main__":
         print("\nExample Usage (in a script that imports this file, or an interactive session):")
         print("--------------------------------------------------------------------------")
         print("\n# To plot a curve over real numbers:")
+        print("# from elliptic_curve import EllipticCurve")
         print("# curve = EllipticCurve(a=-2, b=4)")
         print("# curve.plot_real()")
 
         print("\n# To use the finite field features:")
-        print("ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1)")
+        print("# from elliptic_curve import FiniteFieldEllipticCurve")
+        print("# ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1)")
 
         print("\n# To list points:")
-        print("ff_curve.list_points()")
+        print("# ff_curve.list_points()")
 
         print("\n# To plot points:")
         print("# ff_curve.plot_finite_field()")
 
         print("\n# To add two points:")
-        print("p1 = (3, 10)")
-        print("p2 = (9, 7)")
-        print("result = ff_curve.add_points(p1, p2)")
-        print(f'Result of {p1} + {p2} = {result}')
+        print("# p1 = (3, 10)")
+        print("# p2 = (9, 7)")
+        print("# result = ff_curve.add_points(p1, p2)")
+        print("# print(f'Result of {p1} + {p2} = {result}')")
     else:
         parser = argparse.ArgumentParser(description="Elliptic Curve Plotter and Point Calculator.")
         subparsers = parser.add_subparsers(dest='command', required=True)
