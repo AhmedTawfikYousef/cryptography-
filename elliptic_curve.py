@@ -110,24 +110,35 @@ class FiniteFieldEllipticCurve(EllipticCurve):
 
 
 if __name__ == "__main__":
-    import sys
-    if 'ipykernel' in sys.modules:
-        print("Running in a notebook environment. Use the classes directly.")
-        print("Example Usage:")
+    # Check for notebook environment or no arguments
+    is_notebook = 'ipykernel' in sys.modules
+    is_no_args = len(sys.argv) == 1
+
+    if is_notebook or is_no_args:
+        print("Running in an interactive environment or without command-line arguments.")
+        if is_no_args and not is_notebook:
+            print("To use the command-line interface, provide arguments. Try 'python elliptic_curve.py --help'")
+
+        print("\nExample Usage (in a script that imports this file, or an interactive session):")
+        print("--------------------------------------------------------------------------")
         print("\n# To plot a curve over real numbers:")
         print("# curve = EllipticCurve(a=-2, b=4)")
         print("# curve.plot_real()")
-        print("\n# To list points on a curve over a finite field:")
-        print("# ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1)")
-        print("# ff_curve.list_points()")
-        print("\n# To plot points on a curve over a finite field:")
+
+        print("\n# To use the finite field features:")
+        print("ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1)")
+
+        print("\n# To list points:")
+        print("ff_curve.list_points()")
+
+        print("\n# To plot points:")
         print("# ff_curve.plot_finite_field()")
+
         print("\n# To add two points:")
-        print("# p1 = (3, 10)")
-        print("# p2 = (9, 7)")
-        print("# ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1) # Recreate curve if needed")
-        print("# result = ff_curve.add_points(p1, p2)")
-        print("# print(f'Result of {p1} + {p2} = {result}')")
+        print("p1 = (3, 10)")
+        print("p2 = (9, 7)")
+        print("result = ff_curve.add_points(p1, p2)")
+        print(f'Result of {p1} + {p2} = {result}')
     else:
         parser = argparse.ArgumentParser(description="Elliptic Curve Plotter and Point Calculator.")
         subparsers = parser.add_subparsers(dest='command', required=True)
