@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
+import sys
 
 class EllipticCurve:
     def __init__(self, a, b):
@@ -109,59 +110,77 @@ class FiniteFieldEllipticCurve(EllipticCurve):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Elliptic Curve Plotter and Point Calculator.")
-    subparsers = parser.add_subparsers(dest='command', required=True)
+    import sys
+    if 'ipykernel' in sys.modules:
+        print("Running in a notebook environment. Use the classes directly.")
+        print("Example Usage:")
+        print("\n# To plot a curve over real numbers:")
+        print("# curve = EllipticCurve(a=-2, b=4)")
+        print("# curve.plot_real()")
+        print("\n# To list points on a curve over a finite field:")
+        print("# ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1)")
+        print("# ff_curve.list_points()")
+        print("\n# To plot points on a curve over a finite field:")
+        print("# ff_curve.plot_finite_field()")
+        print("\n# To add two points:")
+        print("# p1 = (3, 10)")
+        print("# p2 = (9, 7)")
+        print("# ff_curve = FiniteFieldEllipticCurve(p=23, a=1, b=1) # Recreate curve if needed")
+        print("# result = ff_curve.add_points(p1, p2)")
+        print("# print(f'Result of {p1} + {p2} = {result}')")
+    else:
+        parser = argparse.ArgumentParser(description="Elliptic Curve Plotter and Point Calculator.")
+        subparsers = parser.add_subparsers(dest='command', required=True)
 
-    # Subparser for plotting over real numbers
-    parser_plot = subparsers.add_parser('plot', help='Plot an elliptic curve over real numbers.')
-    parser_plot.add_argument('-a', type=int, default=-2, help='Coefficient a of the curve.')
-    parser_plot.add_argument('-b', type=int, default=4, help='Coefficient b of the curve.')
+        # Subparser for plotting over real numbers
+        parser_plot = subparsers.add_parser('plot', help='Plot an elliptic curve over real numbers.')
+        parser_plot.add_argument('-a', type=int, default=-2, help='Coefficient a of the curve.')
+        parser_plot.add_argument('-b', type=int, default=4, help='Coefficient b of the curve.')
 
-    # Subparser for finite field calculations
-    parser_ff = subparsers.add_parser('finite_field', help='Calculate points on an elliptic curve over a finite field.')
-    parser_ff.add_argument('-p', type=int, default=23, help='The prime modulus of the finite field.')
-    parser_ff.add_argument('-a', type=int, default=1, help='Coefficient a of the curve.')
-    parser_ff.add_argument('-b', type=int, default=1, help='Coefficient b of the curve.')
-    parser_ff.add_argument('--plot', action='store_true', help='Plot the points on the curve.')
+        # Subparser for finite field calculations
+        parser_ff = subparsers.add_parser('finite_field', help='Calculate points on an elliptic curve over a finite field.')
+        parser_ff.add_argument('-p', type=int, default=23, help='The prime modulus of the finite field.')
+        parser_ff.add_argument('-a', type=int, default=1, help='Coefficient a of the curve.')
+        parser_ff.add_argument('-b', type=int, default=1, help='Coefficient b of the curve.')
+        parser_ff.add_argument('--plot', action='store_true', help='Plot the points on the curve.')
 
-    # Subparser for point addition
-    parser_add = subparsers.add_parser('add', help='Add two points on an elliptic curve over a finite field.')
-    parser_add.add_argument('-p', type=int, required=True, help='The prime modulus of the finite field.')
-    parser_add.add_argument('-a', type=int, required=True, help='Coefficient a of the curve.')
-    parser_add.add_argument('-b', type=int, required=True, help='Coefficient b of the curve.')
-    parser_add.add_argument('p1', type=str, help="First point, e.g., '(x,y)' or 'O'.")
-    parser_add.add_argument('p2', type=str, help="Second point, e.g., '(x,y)' or 'O'.")
+        # Subparser for point addition
+        parser_add = subparsers.add_parser('add', help='Add two points on an elliptic curve over a finite field.')
+        parser_add.add_argument('-p', type=int, required=True, help='The prime modulus of the finite field.')
+        parser_add.add_argument('-a', type=int, required=True, help='Coefficient a of the curve.')
+        parser_add.add_argument('-b', type=int, required=True, help='Coefficient b of the curve.')
+        parser_add.add_argument('p1', type=str, help="First point, e.g., '(x,y)' or 'O'.")
+        parser_add.add_argument('p2', type=str, help="Second point, e.g., '(x,y)' or 'O'.")
 
+        args = parser.parse_args()
 
-    args = parser.parse_args()
+        if args.command == 'plot':
+            curve = EllipticCurve(a=args.a, b=args.b)
+            curve.plot_real()
+        elif args.command == 'finite_field':
+            ff_curve = FiniteFieldEllipticCurve(p=args.p, a=args.a, b=args.b)
+            ff_curve.list_points()
+            if args.plot:
+                ff_curve.plot_finite_field()
+        elif args.command == 'add':
+            ff_curve = FiniteFieldEllipticCurve(p=args.p, a=args.a, b=args.b)
 
-    if args.command == 'plot':
-        curve = EllipticCurve(a=args.a, b=args.b)
-        curve.plot_real()
-    elif args.command == 'finite_field':
-        ff_curve = FiniteFieldEllipticCurve(p=args.p, a=args.a, b=args.b)
-        ff_curve.list_points()
-        if args.plot:
-            ff_curve.plot_finite_field()
-    elif args.command == 'add':
-        ff_curve = FiniteFieldEllipticCurve(p=args.p, a=args.a, b=args.b)
+            def parse_point(p_str):
+                if p_str.upper() == 'O':
+                    return None
+                try:
+                    return tuple(map(int, p_str.strip('()').split(',')))
+                except:
+                    raise argparse.ArgumentTypeError(f"Invalid point format: {p_str}")
 
-        def parse_point(p_str):
-            if p_str.upper() == 'O':
-                return None
-            try:
-                return tuple(map(int, p_str.strip('()').split(',')))
-            except:
-                raise argparse.ArgumentTypeError(f"Invalid point format: {p_str}")
+            p1 = parse_point(args.p1)
+            p2 = parse_point(args.p2)
 
-        p1 = parse_point(args.p1)
-        p2 = parse_point(args.p2)
+            result = ff_curve.add_points(p1, p2)
 
-        result = ff_curve.add_points(p1, p2)
+            p1_str = "O" if p1 is None else str(p1)
+            p2_str = "O" if p2 is None else str(p2)
+            res_str = "O" if result is None else str(result)
 
-        p1_str = "O" if p1 is None else str(p1)
-        p2_str = "O" if p2 is None else str(p2)
-        res_str = "O" if result is None else str(result)
-
-        print(f"Adding {p1_str} and {p2_str} on y^2 = x^3 + {args.a}x + {args.b} (mod {args.p})")
-        print(f"Result: {res_str}")
+            print(f"Adding {p1_str} and {p2_str} on y^2 = x^3 + {args.a}x + {args.b} (mod {args.p})")
+            print(f"Result: {res_str}")
